@@ -1,0 +1,32 @@
+version: "3.3"
+services:
+  rabbitmq:
+    image: bitnami/rabbitmq:latest
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_USERNAME=root
+      - RABBITMQ_PASSWORD=root
+    ports:
+      - 4369:4369
+      - 5671-5672:5671-5672
+      - 15672:15672
+      - 25672:25672
+    restart: on-failure
+#    --------------- SERVICES  ---------------
+  disspring:
+    build:
+      context: dis-spring
+    container_name: disspring
+    restart: always
+    depends_on:
+      - rabbitmq
+  disconsumer:
+    build:
+      context: dis-consumer
+    container_name: disconsumer
+    ports:
+      - 8989:8989
+    restart: always
+    depends_on:
+      - rabbitmq
+      - disspring
